@@ -1,3 +1,4 @@
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
@@ -57,14 +58,28 @@ test = test.drop(['Fare'],axis=1)
 
 train_data = train.drop('Survived', axis = 1)
 target = train['Survived']
-#print(train_data.info())
 
 k_fold = KFold(n_splits=10, shuffle=True, random_state=0)
 
 clf = RandomForestClassifier(n_estimators=13)
-# print(clf)
+clf.fit(train_data,target)
 
 # Model Evaluating
-scoring = 'f1'
+scoring = 'accuracy'
 score = cross_val_score(clf,train_data,target,cv=k_fold,n_jobs=1,scoring=scoring)
-print(score)
+#print(score)
+#print(round(np.mean(score)*100,2))
+
+# test 파일 예측 실행
+
+# test 파일 PassengerId 열 불러오기 위함
+test2 = pd.read_csv('C:/Users/dudwo/Desktop/ML/Data/titanic/test.csv')
+
+# 예측
+prediction = clf.predict(test)
+submission = pd.DataFrame({
+    "PassengerId" : test2["PassengerId"],
+    "Survived" : prediction
+})
+
+print(submission)
